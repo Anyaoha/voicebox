@@ -10,6 +10,8 @@ export interface FileFilter {
 
 export interface PlatformFilesystem {
   saveFile(filename: string, blob: Blob, filters?: FileFilter[]): Promise<void>;
+  openPath(path: string): Promise<void>;
+  pickDirectory(title: string): Promise<string | null>;
 }
 
 export interface UpdateStatus {
@@ -48,11 +50,18 @@ export interface PlatformAudio {
   stopPlayback(): void;
 }
 
+export interface ServerLogEntry {
+  stream: 'stdout' | 'stderr';
+  line: string;
+}
+
 export interface PlatformLifecycle {
-  startServer(remote?: boolean): Promise<string>;
+  startServer(remote?: boolean, modelsDir?: string | null): Promise<string>;
   stopServer(): Promise<void>;
+  restartServer(modelsDir?: string | null): Promise<string>;
   setKeepServerRunning(keep: boolean): Promise<void>;
   setupWindowCloseHandler(): Promise<void>;
+  subscribeToServerLogs(callback: (entry: ServerLogEntry) => void): () => void;
   onServerReady?: () => void;
 }
 
